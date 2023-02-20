@@ -1,0 +1,41 @@
+apt update -y
+apt upgrade -y
+//////////////////////////////
+hostnamectl set-hostname minio-01
+hostnamectl set-hostname minio-02
+hostnamectl set-hostname minio-03
+hostnamectl set-hostname minio-04
+//////////////////////////////
+date
+timedatectl set-timezone Europe/Amsterdam
+timedatectl | grep Time
+systemctl status chronyd
+chronyc makestep
+date
+//////////////////////////////
+mkfs.xfs /dev/xvdb -L DISK1
+//////////////////////////////
+nano /etc/fstab
+	LABEL=DISK1      /mnt/disk1     xfs     defaults,noatime  02
+//////////////////////////////
+nano /etc/hosts
+	172.31.28.128 minio-01.devopshobbies.com
+	172.31.19.42 minio-02.devopshobbies.com
+	172.31.19.76 minio-03.devopshobbies.com
+	172.31.29.157 minio-04.devopshobbies.com
+//////////////////////////////
+DOWNLOAD MINIO FROM LINK ==> POWERPOINT
+//////////////////////////////
+reboot
+//////////////////////////////
+mkdir /mnt/disk1/minio
+//////////////////////////////
+groupadd -r minio-user
+useradd -M -r -g minio-user minio-user
+chown minio-user:minio-user /mnt/disk1/minio
+//////////////////////////////
+sudo systemctl start minio.service
+sudo systemctl enable minio.service
+sudo systemctl status minio.service
+//////////////////////////////
+

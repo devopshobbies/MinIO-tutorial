@@ -1,0 +1,5 @@
+MINIO_VOLUMES="http://minio-0{1...4}.devopshobbies.com:9000/mnt/disk1/minio"
+MINIO_OPTS="--console-address :9001"
+MINIO_ROOT_USER=adminminio
+MINIO_ROOT_PASSWORD=adminminio
+MINIO_SERVER_URL="http://minio-01.devopshobbies.com:9000"
