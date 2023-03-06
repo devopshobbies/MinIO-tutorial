@@ -1,0 +1,64 @@
+upstream minio_ui {
+    least_conn;
+    server {{ SERVER 01 IP }}:9001 max_fails=4 fail_timeout=60s;
+    server {{ SERVER 02 IP }}:9001 max_fails=4 fail_timeout=60s;
+    server {{ SERVER 03 IP }}:9001 max_fails=4 fail_timeout=60s;
+    server {{ SERVER 04 IP }}:9001 max_fails=4 fail_timeout=60s;
+}
+
+server {
+    listen 80;
+    server_name minio.devops.com;
+    access_log /dev/null;
+    error_log  /dev/null;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    server_name minio.devops.com;
+    access_log /var/log/nginx/minio-access.log ;
+    error_log   /var/log/nginx/minio-error.log notice;
+    ssl_certificate     /etc/ssl/certs/CERTIFICATE.crt;
+    ssl_certificate_key  /etc/ssl/certs/KEY.key;
+    ssl_protocols TLSv1.2;
+    gzip on;
+    gzip_min_length 1000;
+    gzip_comp_level 5;
+    gzip_proxied any;
+    gzip_vary on;
+    gzip_types
+        text/css
+        text/javascript
+        text/xml
+        text/plain
+        text/x-component
+        application/javascript
+        application/json
+        application/xml
+        application/rss+xml
+        font/x-woff
+        application/font-woff2
+        application/vnd.ms-fontobject
+        image/svg+xml
+        image/jpeg
+        image/x-icon
+        image/png
+        image/gif;
+
+    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 http_429 non_idempotent;
+
+
+    location / {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header X-Forwarded-For "$proxy_add_x_forwarded_for";
+        client_max_body_size 25m;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header LB "Node1";
+        proxy_pass http://minio_ui;
+}
+}

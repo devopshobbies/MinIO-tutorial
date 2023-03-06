@@ -1,0 +1,32 @@
+sudo yum install epel-release -y
+sudo yum install -y nginx keepalived htop
+sudo systemctl enable nginx --now
+
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --add-rich-rule='rule protocol value="vrrp" accept' --permanent
+sudo firewall-cmd --permanent --add-source={{SERVER 1 IP}}
+sudo firewall-cmd --permanent --add-source={{SERVER 2 IP}}
+sudo firewall-cmd --reload
+
+sudo cp /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.bck
+nano /etc/keepalived/keepalived.conf
+
+#CHECK FILE KEEPALIVE-MASTER FOR SERVER ONE
+#CHECK FILE KEEPALIVE-SLAVE FOR SERVER TWO
+
+
+nano /bin/check_nginx.sh
+================
+#!/bin/sh
+if [ -z "`pidof nginx`" ]; then
+  exit 1
+fi
+================
+sudo chmod 755 /bin/check_nginx.sh
+
+
+sudo systemctl enable keepalived --now
+sudo systemctl status keepalived
+
+#CHECK NGINX CONFIG FILE
