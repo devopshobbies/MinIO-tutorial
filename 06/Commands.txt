@@ -16,7 +16,7 @@ date
 mkfs.xfs /dev/xvdb -L DISK1
 //////////////////////////////
 nano /etc/fstab
-	LABEL=DISK1      /mnt/disk1     xfs     defaults,noatime  02
+	LABEL=DISK1      /mnt/disk1     xfs     defaults,noatime  0 2
 //////////////////////////////
 nano /etc/hosts
 	172.31.28.128 minio-01.devopshobbies.com
